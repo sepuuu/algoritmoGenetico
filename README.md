@@ -5,8 +5,9 @@
 
 
 # cosas a arreglar
+
+- en caso de que llegue 1 o menos comenzar denuevo.
 - crear cruza.
 - en base a los nuevos se crea la siguiente generacion.
-- en caso de que no lleguen 2 en la primera modificacion que comienze de nuevo.
 
 luego de esto podemos seguir avanzando.

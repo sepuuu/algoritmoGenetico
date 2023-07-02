@@ -7,7 +7,6 @@ grida_dim = 20
 grida = np.full((grida_dim, grida_dim, 3), 255)
 
 individuos = []
-# Movimientos posibles (N, S, E, O, NE, NW, SE, SW, Ninguno)
 movimientos = [(0, -1), (0, 1), (1, 0), (-1, 0), (1, -1), (-1, -1), (1, 1), (-1, 1), (0, 0)]
 
 colores = [(128, 0, 0), (139, 0, 0), (165, 42, 42), (178, 34, 34), (220, 20, 60), (255, 0, 0), (255, 99, 71), (255, 165, 0), (255, 140, 0)]
@@ -22,6 +21,7 @@ class Individuo:
         self.probs = probs
         self.color = color
         self.en_meta = False
+        self.iteraciones = 0
 
 for _ in range(num_individuos):
     x = np.random.randint(0, grida_dim//4)
@@ -40,7 +40,8 @@ img = ax.imshow(grida, origin='lower')
 
 def visualizar_grida(grida):
     img.set_data(grida)
-    plt.grid(color='gray', linestyle='-', linewidth=0.2)
+    plt.imshow(grida, extent=[0, grida_dim, 0, grida_dim], origin='lower')
+    plt.grid(color='gray', linestyle='--', linewidth=0.2)
     plt.draw()
     plt.pause(0.1)
 
@@ -55,6 +56,8 @@ for i in range(num_iteraciones):
     for individuo in individuos:
         if individuo.en_meta:
             continue
+
+        individuo.iteraciones += 1
 
         pos_anterior = (individuo.y, individuo.x)
 
@@ -86,11 +89,6 @@ for i in range(num_iteraciones):
 plt.ioff()
 plt.show()
 
-
-#falta implementar mutacion
-
-#papa 1 = [a b c d e f g h i]
-#papa 2 = [j k l m n o p q r]
-#
-#hijo 1 = [a b c m n o p q r]
-#hijo 2 = [j k l d T f g h i]
+print("Individuos que llegaron a la meta:")
+for individuo in individuos_en_meta:
+    print(f"Color: {individuo.color}, Iteraciones: {individuo.iteraciones}, Genética: {individuo.probs}")
