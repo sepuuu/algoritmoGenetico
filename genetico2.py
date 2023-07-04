@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 plt.ion()
 
 grida_dim = 20
+grida = np.full((grida_dim, grida_dim, 3), 255)
 
+individuos = []
 movimientos = [(0, -1), (0, 1), (1, 0), (-1, 0), (1, -1), (-1, -1), (1, 1), (-1, 1), (0, 0)]
 
 colores = [(128, 0, 0), (139, 0, 0), (165, 42, 42), (178, 34, 34), (220, 20, 60), (255, 0, 0), (255, 99, 71), (255, 165, 0), (255, 140, 0)]
@@ -21,17 +23,19 @@ class Individuo:
         self.en_meta = False
         self.iteraciones = 0
 
-# seed para replicabilidad
-seed = 3
+seed = 16
 np.random.seed(seed)
 
-while True:
+individuos_en_meta = []  # Mantén un registro de los individuos que alcanzaron la meta
+
+while len(individuos_en_meta) < 2:
     grida = np.full((grida_dim, grida_dim, 3), 255, dtype=int)
     individuos = []
-
-    if 'individuo_ganador' in locals():
-        individuos.append(individuo_ganador)
-        grida[individuo_ganador.y, individuo_ganador.x] = individuo_ganador.color
+    
+    if individuos_en_meta:
+        individuos += individuos_en_meta
+        for ind in individuos_en_meta:
+            grida[ind.y, ind.x] = ind.color
 
     for _ in range(num_individuos - len(individuos)):
         x = np.random.randint(0, grida_dim//4)
@@ -57,7 +61,6 @@ while True:
 
     visualizar_grida(grida)
 
-    individuos_en_meta = []
     num_iteraciones = 50
 
     posiciones_ocupadas = set((ind.y, ind.x) for ind in individuos)
@@ -84,7 +87,6 @@ while True:
             individuo.y = new_y
 
             if individuo.x == meta:
-                individuos_en_meta.append(individuo)
                 individuo.en_meta = True
 
             if pos_anterior in posiciones_ocupadas:
@@ -95,15 +97,13 @@ while True:
             grida[individuo.y, individuo.x] = individuo.color
 
         visualizar_grida(grida)
-
-    plt.ioff()
-    plt.show()
-
-    print("Individuos que llegaron a la meta:")
-    for individuo in individuos_en_meta:
-        print(f"Color: {individuo.color}, Iteraciones: {individuo.iteraciones}, Genética: {individuo.probs}")
     
-    if len(individuos_en_meta) > 1:
-        break
-    elif len(individuos_en_meta) == 1:
-        individuo_ganador = individuos_en_meta[0]
+    nuevos_en_meta = [ind for ind in individuos if ind.en_meta and ind not in individuos_en_meta]
+    individuos_en_meta += nuevos_en_meta
+
+plt.ioff()
+plt.show()
+
+print("Individuos que llegaron a la meta:")
+for individuo in individuos_en_meta:
+    print(f"Color: {individuo.color}, Iteraciones: {individuo.iteraciones}, Genética: {individuo.probs}")
