@@ -9,10 +9,10 @@ grida = np.full((grida_dim, grida_dim, 3), 255)
 individuos = []
 movimientos = [(0, -1), (0, 1), (1, 0), (-1, 0), (1, -1), (-1, -1), (1, 1), (-1, 1), (0, 0)]
 colores = [(128, 0, 0), (139, 0, 0), (165, 42, 42), (178, 34, 34), (220, 20, 60), (255, 0, 0), (255, 99, 71), (255, 165, 0), (255, 140, 0)]
-num_individuos = 50
+num_individuos = 40
 color_fondo = [255, 255, 255]
-# Ejecutamos varias generaciones
-num_generaciones = 30
+num_generaciones = 5
+
 class Individuo:
     def __init__(self, x, y, probs, color):
         self.x = x
@@ -29,20 +29,16 @@ class Individuo:
             return  self.pasos
         
 def probabilidades(individuos):
-    total_fitness = sum(ind.fitness() for ind in individuos)
-    return [ind.fitness() / total_fitness for ind in individuos]
+    p = 0.9 # o el valor que desees
+    probabilities = [p * ((1 - p) ** i) for i in range(len(individuos))]
+    total = sum(probabilities)
+    return [prob / total for prob in probabilities]
 
 def seleccion_por_aptitud(individuos):
-    # Primero, ordenamos los individuos en base a su fitness
-    individuos.sort(key=lambda ind: ind.fitness(), reverse=True)
-
-    # Asignamos probabilidades basadas en el orden
-    p = 0.5
-    # Calculamos las probabilidades
+    individuos.sort(key=lambda ind: ind.fitness(), reverse=False)
     probabilities = probabilidades(individuos)
-    
-    # Seleccionamos un individuo basado en las probabilidades
     individuo_seleccionado = np.random.choice(individuos, p=probabilities)
+    return individuo_seleccionado
 
     return individuo_seleccionado
 
@@ -61,7 +57,7 @@ def cruzar_un_punto(ind1, ind2):
     hijos = [Individuo(x1, y1, new_probs1, ind1.color), Individuo(x2, y2, new_probs2, ind2.color)]
     return hijos
 
-def mutar(individuo, tasa_mutacion=0.01):
+def mutar(individuo, tasa_mutacion=0.1):
     cambio = tasa_mutacion * np.random.randn(len(movimientos))
     individuo.probs = individuo.probs + cambio
     individuo.probs = np.clip(individuo.probs, 0, None) # limitar las probabilidades a no ser negativas
@@ -69,7 +65,7 @@ def mutar(individuo, tasa_mutacion=0.01):
     movimiento_predominante = np.argmax(individuo.probs)
     individuo.color = colores[movimiento_predominante]
 
-seed = 11
+seed = 3
 np.random.seed(seed)
 for _ in range(num_individuos):
     x = np.random.randint(0, grida_dim//4)
@@ -178,7 +174,9 @@ for i in range(num_generaciones):
 plt.ioff()
 plt.show() 
 
-# Al final, después de todas las iteraciones...
+plt.ioff()
+plt.show() 
+
 print(f"Individuos que alcanzaron la meta: {len(individuos_en_meta)}")
 probabilidades = probabilidades(individuos_en_meta)
 
