@@ -6,7 +6,7 @@
 
 # cosas a arreglar
 
-- en caso de que llegue 1 o menos dejar el que llegó y crear el resto aleatoriamente dnvo.
+- en caso de que llegue 1 o menos dejar el que llegó y crear el resto aleatoriamente dnvo. #verificar bien, hay que testearlo pero aparentemente funciona
 - crear cruza. (crossover que les explico en ds)
 - en base a los nuevos se crea la siguiente generacion.
 - graficar
