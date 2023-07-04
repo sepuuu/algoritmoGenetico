@@ -97,7 +97,10 @@ while len(individuos_en_meta) < 2:
             grida[individuo.y, individuo.x] = individuo.color
 
         visualizar_grida(grida)
-    
+        plt.pause(0.1)  # Pausar por un tiempo antes de limpiar la figura
+
+    plt.close(fig)  # Cerrar la figura actual antes de abrir una nueva
+
     nuevos_en_meta = [ind for ind in individuos if ind.en_meta and ind not in individuos_en_meta]
     individuos_en_meta += nuevos_en_meta
 
