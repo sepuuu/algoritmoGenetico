@@ -124,7 +124,7 @@ for gen in range(300):  # Número de generaciones
 
     if gen == 0 or (gen + 1) % plot_interval == 0:
         visualizar_grida(grida, gen, 0)
-        plt.pause(0.05)
+        plt.pause(0.01)
 
     if (gen + 1) % 5 == 0:
         #num_iteraciones -= 5
@@ -165,7 +165,6 @@ for gen in range(300):  # Número de generaciones
             grida[individuo.y, individuo.x] = individuo.color
 
         visualizar_grida(grida, gen, i)
-        #plt.pause(0.05)
 
     # Si un individuo llega a la meta, generamos más individuos y conservamos el que llegó a la meta
     
