@@ -23,6 +23,10 @@ class Individuo:
         self.en_meta = False
         self.iteraciones = 0
 
+
+seed = 1
+np.random.seed(seed)
+
 for _ in range(num_individuos):
     x = np.random.randint(0, grida_dim//4)
     y = np.random.randint(0, grida_dim)

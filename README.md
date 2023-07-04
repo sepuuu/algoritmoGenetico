@@ -9,6 +9,6 @@
 - en caso de que llegue 1 o menos dejar el que llegó y crear el resto aleatoriamente dnvo.
 - crear cruza. (crossover que les explico en ds)
 - en base a los nuevos se crea la siguiente generacion.
-- crear seed.
+- graficar
 
 luego de esto podemos seguir avanzando.
