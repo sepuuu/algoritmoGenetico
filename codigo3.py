@@ -28,17 +28,36 @@ np.random.seed(seed)
 
 individuos_en_meta = []  # Mantén un registro de los individuos que alcanzaron la meta
 
+def crear_siguiente_generacion(individuos, num_individuos):
+    poblacion = len(individuos)
+    probabilidad_seleccion = np.arange(1, poblacion + 1) / np.sum(np.arange(1, poblacion + 1))
+
+    nueva_generacion = []
+    for _ in range(num_individuos):
+        padre = individuos[np.random.choice(poblacion, p=probabilidad_seleccion)]
+        madre = individuos[np.random.choice(poblacion, p=probabilidad_seleccion)]
+
+        punto_cruce = np.random.randint(0, len(movimientos))
+        nuevo_probs = np.concatenate((padre.probs[:punto_cruce], madre.probs[punto_cruce:]))
+        nuevo_probs = nuevo_probs / np.sum(nuevo_probs)
+
+        nuevo_color = colores[np.argmax(nuevo_probs)]
+        nuevo_individuo = Individuo(padre.x, padre.y, nuevo_probs, nuevo_color)
+        nueva_generacion.append(nuevo_individuo)
+
+    return nueva_generacion
+
 while len(individuos_en_meta) < 2:
     grida = np.full((grida_dim, grida_dim, 3), 255, dtype=int)
     individuos = []
-    
+
     if individuos_en_meta:
         individuos += individuos_en_meta
         for ind in individuos_en_meta:
             grida[ind.y, ind.x] = ind.color
 
     for _ in range(num_individuos - len(individuos)):
-        x = np.random.randint(0, grida_dim//4)
+        x = np.random.randint(0, grida_dim // 4)
         y = np.random.randint(0, grida_dim)
         probs = np.random.rand(len(movimientos))
         probs = probs / np.sum(probs)
@@ -103,6 +122,12 @@ while len(individuos_en_meta) < 2:
 
     nuevos_en_meta = [ind for ind in individuos if ind.en_meta and ind not in individuos_en_meta]
     individuos_en_meta += nuevos_en_meta
+
+    if len(individuos_en_meta) >= 2:
+        break
+
+    nueva_generacion = crear_siguiente_generacion(individuos_en_meta, num_individuos)
+    individuos_en_meta = nueva_generacion
 
 plt.ioff()
 plt.show()
