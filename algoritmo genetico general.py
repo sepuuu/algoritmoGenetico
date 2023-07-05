@@ -12,7 +12,6 @@ colores = [(128, 0, 0), (139, 0, 0), (165, 42, 42), (178, 34, 34), (220, 20, 60)
 num_individuos = 40
 color_fondo = [255, 255, 255]
 num_generaciones = 5
-num_generacion = 1
 
 class Individuo:
     def __init__(self, x, y, probs, color):
@@ -41,6 +40,8 @@ def seleccion_por_aptitud(individuos):
     individuo_seleccionado = np.random.choice(individuos, p=probabilities)
     return individuo_seleccionado
 
+    return individuo_seleccionado
+
 
 def cruzar_un_punto(ind1, ind2):
     punto_cruce = np.random.randint(len(ind1.probs))
@@ -64,7 +65,7 @@ def mutar(individuo, tasa_mutacion=0.1):
     movimiento_predominante = np.argmax(individuo.probs)
     individuo.color = colores[movimiento_predominante]
 
-seed = 1
+seed = 3
 np.random.seed(seed)
 for _ in range(num_individuos):
     x = np.random.randint(0, grida_dim//4)
@@ -80,15 +81,14 @@ meta = grida_dim - 1
 
 fig, ax = plt.subplots()  # Creamos la figura y los ejes al inicio del programa
 
-def visualizar_grida(grida,num_iteracion):
+def visualizar_grida(grida):
     ax.cla()  # Limpiamos los datos de la gráfica
     ax.imshow(grida, origin='lower')
     plt.grid(color='gray', linestyle='-', linewidth=0.2)
-    plt.title(f"Generación: {num_generacion}, Iteracion: {num_iteracion}") 
     plt.draw()
     plt.pause(0.001)
 
-visualizar_grida(grida,1)
+visualizar_grida(grida)
 
 individuos_en_meta = []
 num_iteraciones = 50
@@ -97,14 +97,11 @@ def ejecutar_generacion(individuos):
     grida = np.full((grida_dim, grida_dim, 3), 255)
     posiciones_ocupadas = set((ind.y, ind.x) for ind in individuos)
     individuos_en_meta = []
-    primer_en_meta = None
 
     for ind in individuos:
         grida[ind.y, ind.x] = ind.color
 
-    num_iteracion = 1
     for i in range(num_iteraciones):
-        
         for individuo in individuos:
             if individuo.en_meta:
                 continue
@@ -127,8 +124,6 @@ def ejecutar_generacion(individuos):
             if individuo.x == meta:
                 individuos_en_meta.append(individuo)
                 individuo.en_meta = True
-                if primer_en_meta is None:
-                    primer_en_meta = individuo
 
             if pos_anterior in posiciones_ocupadas:
                 posiciones_ocupadas.remove(pos_anterior)
@@ -136,8 +131,8 @@ def ejecutar_generacion(individuos):
 
             grida[pos_anterior] = color_fondo
             grida[individuo.y, individuo.x] = individuo.color
-        num_iteracion = i + 1
-        visualizar_grida(grida,num_iteracion)
+
+        visualizar_grida(grida)
         fig.canvas.draw()  # Dibuja la gráfica
         fig.canvas.flush_events()  # Actualiza la gráfica
 
@@ -145,7 +140,7 @@ def ejecutar_generacion(individuos):
     for ind in individuos_en_meta:
         print(f"Fitness de individuo: {ind.fitness()}")
 
-    return individuos_en_meta, primer_en_meta
+    return individuos_en_meta
 
 
 # Al inicio, creamos los individuos aleatoriamente
@@ -160,14 +155,11 @@ for _ in range(num_individuos):
     individuos.append(individuo)
 
 for i in range(num_generaciones):
-    num_generacion = i + 1 
     print(f"Ejecutando generación {i+1}")
-    individuos_en_meta, primer_en_meta = ejecutar_generacion(individuos)
+    individuos_en_meta = ejecutar_generacion(individuos)
     
     if len(individuos_en_meta) > 0:
         nuevos_individuos = []
-        if primer_en_meta is not None:
-            nuevos_individuos.append(primer_en_meta)
         while len(nuevos_individuos) < num_individuos:
             padre1 = seleccion_por_aptitud(individuos_en_meta)
             padre2 = seleccion_por_aptitud(individuos_en_meta)
@@ -178,7 +170,6 @@ for i in range(num_generaciones):
         individuos = nuevos_individuos
     else:
         print("Ningún individuo alcanzó la meta en la generación actual.")
-
 
 plt.ioff()
 plt.show() 
