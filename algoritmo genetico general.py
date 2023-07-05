@@ -180,13 +180,10 @@ for i in range(num_generaciones):
     num_generacion = i + 1 
     print(f"Ejecutando generación {i+1}")
     
-    while True: # Repite la generación hasta que al menos dos individuos alcancen la meta
-        individuos_en_meta, primer_en_meta = ejecutar_generacion(individuos)
+    individuos_en_meta, primer_en_meta = ejecutar_generacion(individuos)
 
-        if len(individuos_en_meta) >= 2:  # Si al menos dos individuos llegaron a la meta, sale del loop
-            break
-        else:
-            print(f"Sólo {len(individuos_en_meta)} individuos alcanzaron la meta. Repitiendo la generación.")
+    if len(individuos_en_meta) < 2:
+        print(f"Sólo {len(individuos_en_meta)} individuos alcanzaron la meta en la generación actual. No se repetirá la generación.")
 
     # Guardando la información requerida de esta generación
     individuos_en_meta_generaciones.append(len(individuos_en_meta))
