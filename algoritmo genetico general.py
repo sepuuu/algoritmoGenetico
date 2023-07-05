@@ -11,7 +11,7 @@ movimientos = [(0, -1), (0, 1), (1, 0), (-1, 0), (1, -1), (-1, -1), (1, 1), (-1,
 colores = [(128, 0, 0), (139, 0, 0), (165, 42, 42), (178, 34, 34), (220, 20, 60), (255, 0, 0), (255, 99, 71), (255, 165, 0), (255, 140, 0)]
 num_individuos = 40
 color_fondo = [255, 255, 255]
-num_generaciones = 5
+num_generaciones = 2
 num_generacion = 1
 
 class Individuo:
@@ -30,7 +30,7 @@ class Individuo:
             return  self.pasos
         
 def probabilidades(individuos):
-    p = 0.9 # o el valor que desees
+    p = 0.5 # o el valor que desees
     probabilities = [p * ((1 - p) ** i) for i in range(len(individuos))]
     total = sum(probabilities)
     return [prob / total for prob in probabilities]
@@ -92,6 +92,7 @@ visualizar_grida(grida,1)
 
 individuos_en_meta = []
 num_iteraciones = 50
+fitness_promedio_generaciones = []
 
 def ejecutar_generacion(individuos):
     grida = np.full((grida_dim, grida_dim, 3), 255)
@@ -140,6 +141,8 @@ def ejecutar_generacion(individuos):
         visualizar_grida(grida,num_iteracion)
         fig.canvas.draw()  # Dibuja la gráfica
         fig.canvas.flush_events()  # Actualiza la gráfica
+        fitness_promedio = np.mean([ind.fitness() for ind in individuos])
+        fitness_promedio_generaciones.append(fitness_promedio)
 
     print(f"Individuos que alcanzaron la meta: {len(individuos_en_meta)}")
     for ind in individuos_en_meta:
@@ -167,7 +170,9 @@ for i in range(num_generaciones):
     if len(individuos_en_meta) > 0:
         nuevos_individuos = []
         if primer_en_meta is not None:
-            nuevos_individuos.append(primer_en_meta)
+            x = np.random.randint(0, grida_dim//4)
+            y = np.random.randint(0, grida_dim)
+            nuevos_individuos.append(Individuo(x, y, primer_en_meta.probs.copy(), (0, 0, 255)))
         while len(nuevos_individuos) < num_individuos:
             padre1 = seleccion_por_aptitud(individuos_en_meta)
             padre2 = seleccion_por_aptitud(individuos_en_meta)
@@ -183,11 +188,19 @@ for i in range(num_generaciones):
 plt.ioff()
 plt.show() 
 
-plt.ioff()
-plt.show() 
-
 print(f"Individuos que alcanzaron la meta: {len(individuos_en_meta)}")
 probabilidades = probabilidades(individuos_en_meta)
 
 for i, ind in enumerate(individuos_en_meta):
     print(f"Individuo {i+1}: Fitness: {ind.fitness()}, Pasos: {ind.pasos}, Probabilidad de ser seleccionado: {probabilidades[i]}")
+
+# Gráfico del fitness promedio de cada generación
+plt.figure()
+plt.plot(range(1, num_generaciones + 1), [0,np.mean(fitness_promedio_generaciones)] , label='Fitness Promedio')
+plt.xlabel('Generación')
+plt.ylabel('Fitness Promedio')
+plt.title('Fitness Promedio por Generación')
+plt.legend()
+plt.show()
+
+#grafico de la generacion con respecto al promedio de fitness
