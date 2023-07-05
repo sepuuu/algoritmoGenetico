@@ -11,8 +11,9 @@ movimientos = [(0, -1), (0, 1), (1, 0), (-1, 0), (1, -1), (-1, -1), (1, 1), (-1,
 colores = [(128, 0, 0), (139, 0, 0), (165, 42, 42), (178, 34, 34), (220, 20, 60), (255, 0, 0), (255, 99, 71), (255, 165, 0), (255, 140, 0)]
 num_individuos = 40
 color_fondo = [255, 255, 255]
-num_generaciones = 2
-num_generacion = 1
+num_generaciones = 20
+num_generacion = 1 #es para el conteo de las generaciones y que este conteo sea global
+num_salto_generaciones = 5
 
 class Individuo:
     def __init__(self, x, y, probs, color):
@@ -138,7 +139,10 @@ def ejecutar_generacion(individuos):
             grida[pos_anterior] = color_fondo
             grida[individuo.y, individuo.x] = individuo.color
         num_iteracion = i + 1
-        visualizar_grida(grida,num_iteracion)
+
+        if(num_generacion%num_salto_generaciones == 0 or num_generacion==1):
+            visualizar_grida(grida,num_iteracion)
+
         fig.canvas.draw()  # Dibuja la gráfica
         fig.canvas.flush_events()  # Actualiza la gráfica
         fitness_promedio = np.mean([ind.fitness() for ind in individuos])
@@ -193,14 +197,5 @@ probabilidades = probabilidades(individuos_en_meta)
 
 for i, ind in enumerate(individuos_en_meta):
     print(f"Individuo {i+1}: Fitness: {ind.fitness()}, Pasos: {ind.pasos}, Probabilidad de ser seleccionado: {probabilidades[i]}")
-
-# Gráfico del fitness promedio de cada generación
-plt.figure()
-plt.plot(range(1, num_generaciones + 1), [0,np.mean(fitness_promedio_generaciones)] , label='Fitness Promedio')
-plt.xlabel('Generación')
-plt.ylabel('Fitness Promedio')
-plt.title('Fitness Promedio por Generación')
-plt.legend()
-plt.show()
 
 #grafico de la generacion con respecto al promedio de fitness
